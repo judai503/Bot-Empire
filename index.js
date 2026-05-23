@@ -1,6 +1,5 @@
-Process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
 import './config.js'
-//import { iniciarMemeAutomatico } from './plugins/_prueba.js';
 import { setupMaster, fork } from 'cluster'
 import { watchFile, unwatchFile } from 'fs'
 import cfonts from 'cfonts'
@@ -12,7 +11,6 @@ import fs, {readdirSync, statSync, unlinkSync, existsSync, mkdirSync, readFileSy
 import yargs from 'yargs';
 import {spawn} from 'child_process'
 import lodash from 'lodash'
-//import { pikaJadiBot } from './plugins/jadibot-serbot.js';
 import chalk from 'chalk'
 import syntaxerror from 'syntax-error'
 import {tmpdir} from 'os'
@@ -74,7 +72,14 @@ const __dirname = global.__dirname(import.meta.url)
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse())
 global.prefix = new RegExp('^[#/!⚡.🧃]')
 
-global.db = new Low(/https?:\/\//.test(opts['db'] || '') ? new cloudDBAdapter(opts['db']) : new JSONFile('./src/database/database.json'))
+const dbPath = './src/database';
+const dbFile = './src/database/database.json';
+if (!fs.existsSync(dbPath)) {
+    fs.mkdirSync(dbPath, { recursive: true });
+    console.log(chalk.bold.green(`[ 📂 ] Carpeta de base de datos creada.`));
+}
+
+global.db = new Low(/https?:\/\//.test(opts['db'] || '') ? new cloudDBAdapter(opts['db']) : new JSONFile(dbFile))
 
 global.DATABASE = global.db 
 global.loadDatabase = async function loadDatabase() {
@@ -137,13 +142,15 @@ const connectionOptions = {
 logger: pino({ level: 'silent' }),
 printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
 mobile: MethodMobile, 
-browser: opcion == '1' ? ['EMPIRE-BOT', 'Edge', '20.0.04'] : methodCodeQR ? ['EMPIRE-BOT', 'Edge', '20.0.04'] : ['Ubuntu', 'Edge', '110.0.1587.56'],
+browser: ['Tío Judai Bot', 'Edge', '20.0.04'],
 auth: {
 creds: state.creds,
 keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
 },
 markOnlineOnConnect: true, 
 generateHighQualityLinkPreview: true, 
+syncFullHistory: true, 
+keepAliveIntervalMs: 20000, 
 getMessage: async (clave) => {
 let jid = jidNormalizedUser(clave.remoteJid)
 let msg = await store.loadMessage(jid, clave.id)
@@ -160,6 +167,7 @@ global.conn = makeWASocket(connectionOptions);
 if (!fs.existsSync(`./${global.sessions}/creds.json`)) {
 if (opcion === '2' || methodCode) {
 opcion = '2'
+setTimeout(async () => {
 if (!conn.authState.creds.registered) {
 let addNumber
 if (!!phoneNumber) {
@@ -174,12 +182,16 @@ phoneNumber = `+${phoneNumber}`
 } while (!await isValidPhoneNumber(phoneNumber))
 rl.close()
 addNumber = phoneNumber.replace(/\D/g, '')
-setTimeout(async () => {
+}
+try {
 let codeBot = await conn.requestPairingCode(addNumber)
 codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
 console.log(chalk.bold.white(chalk.bgMagenta(`🧃 CÓDIGO DE VINCULACIÓN `)), chalk.bold.white(chalk.white(codeBot)))
-}, 3000)
-}}}
+} catch (e) {
+console.error(chalk.red("Error al generar el código:"), e)
+}
+}}, 5000)
+}
 }
 
 conn.isInit = false;
@@ -277,8 +289,6 @@ if (global.pikaJadibts) {
   if (!existsSync(global.rutaJadiBot)) {
     mkdirSync(global.rutaJadiBot, { recursive: true })
     console.log(chalk.bold.cyan(`📁 Carpeta creada: ${global.rutaJadiBot}`))
-  } else {
-    console.log(chalk.bold.cyan(`📁 Carpeta ya existente: ${global.rutaJadiBot}`))
   }
 
   const subbots = readdirSync(global.rutaJadiBot, { withFileTypes: true })
