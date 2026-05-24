@@ -78,7 +78,7 @@ const handler = async (m, { conn }) => {
 ┃ 「 .config 」
 ┃ ➜ 📊 Muestra el estado completo del sistema
 ┃    con todos los módulos activados o desactivados.
-┃    Ejemplo:
+┃
 ┃    • welcome: 🟢 / 🔴
 ┃    • antilink: 🟢 / 🔴
 ┃    • nsfw: 🟢 / 🔴
@@ -148,6 +148,24 @@ const handler = async (m, { conn }) => {
 ┃ 「 .clean 」
 ┃ ➜ Limpia mensajes recientes
 ┃    enviados por el bot en el chat.
+┃
+
+┃ 🏥 CUARENTENA
+┃
+┃ 「 .cuarentena 」
+┃ ➜ Registra usuarios mencionados
+┃    en cuarentena para este grupo.
+┃
+┃ 「 .internados 」
+┃ ➜ Muestra los usuarios
+┃    actualmente en cuarentena.
+┃
+┃ 「 .delcuarentena 」
+┃ ➜ Elimina la cuarentena
+┃    almacenada del grupo.
+┃
+┃ 🔒 Solo admins.
+┃ 📂 Datos guardados por grupo.
 ┃
 
 ┃ ⚡ INFORMACIÓN DEL BOT
