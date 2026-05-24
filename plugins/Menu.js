@@ -31,6 +31,62 @@ const handler = async (m, { conn }) => {
 ┃    configurada del grupo.
 ┃
 
+┃ ⚙️ CONFIGURACIÓN DEL SISTEMA
+┃
+┃ 「 .welcome on/off 」
+┃ ➜ Activa o desactiva el sistema
+┃    de bienvenida en el grupo.
+┃
+┃ 「 .bv / .bienvenida 」
+┃ ➜ Alias de welcome (mismo sistema).
+┃
+┃ 「 .antilink on/off 」
+┃ ➜ Bloquea enlaces dentro del grupo
+┃    para evitar spam.
+┃
+┃ 「 .antilink2 on/off 」
+┃ ➜ Sistema anti-links más estricto
+┃    (detección avanzada).
+┃
+┃ 「 .reaction on/off 」
+┃ ➜ Activa o desactiva reacciones
+┃    automáticas del bot.
+┃
+┃ 「 .detect on/off 」
+┃ ➜ Detecta eventos del grupo
+┃    como entradas y salidas.
+┃
+┃ 「 .detect2 / .eventos 」
+┃ ➜ Sistema avanzado de eventos
+┃    del grupo.
+┃
+┃ 「 .nsfw on/off 」
+┃ ➜ Activa o desactiva contenido
+┃    +18 (NSFW).
+┃
+┃ 「 .modoadmin on/off 」
+┃ ➜ Solo administradores pueden
+┃    interactuar con el bot.
+┃
+┃ 「 .antisubbots on/off 」
+┃ ➜ Bloquea sub-bots o bots externos
+┃    en el grupo.
+┃
+┃ 「 .soloadmin 」
+┃ ➜ Alias de modo admin.
+┃
+┃ 「 .config 」
+┃ ➜ 📊 Muestra el estado completo del sistema
+┃    con todos los módulos activados o desactivados.
+┃    Ejemplo:
+┃    • welcome: 🟢 / 🔴
+┃    • antilink: 🟢 / 🔴
+┃    • nsfw: 🟢 / 🔴
+┃    • reaction: 🟢 / 🔴
+┃
+┃    Sirve como panel general del bot.
+┃
+
 ┃ 🔗 ENLACES
 ┃
 ┃ 「 .link / .l 」
@@ -128,9 +184,7 @@ const handler = async (m, { conn }) => {
 
     return conn.sendMessage(
       m.chat,
-      {
-        text: menu
-      },
+      { text: menu },
       { quoted: m }
     );
 
