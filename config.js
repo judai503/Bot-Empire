@@ -28,6 +28,7 @@ global.pikaJadibts = true;
 // ✨ DATOS DE ESTILO Y METADATOS
 global.packname = '🧃 Empire-Bot MD';
 global.botname = '⚡ Empire-Bot ⚡';
+global.ownername = 'El tío Judai';
 global.wm = 'Empire-MD';
 global.dev = '© Desarrollado por Tío Judai';
 global.textbot = 'Empire-Bot • Potenciado por Tío Judai';
@@ -38,8 +39,8 @@ global.moneda = 'empires';
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.catalogo = fs.readFileSync('./src/catalogo.jpg');
-global.photoSity = [global.catalogo];
+//global.catalogo = fs.readFileSync('./src/catalogo.jpg');
+//global.photoSity = [global.catalogo];
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
