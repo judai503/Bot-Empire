@@ -142,7 +142,7 @@ const connectionOptions = {
 logger: pino({ level: 'silent' }),
 printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
 mobile: MethodMobile, 
-browser: ['Tío Judai Bot', 'Edge', '20.0.04'],
+browser: ['Google Chrome', 'Chrome', '124.0.0.6367.119'],
 auth: {
 creds: state.creds,
 keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
@@ -184,13 +184,14 @@ rl.close()
 addNumber = phoneNumber.replace(/\D/g, '')
 }
 try {
+console.log(chalk.yellowBright("\n🧃 Esperando a que el socket sincronice con Chrome..."));
 let codeBot = await conn.requestPairingCode(addNumber)
 codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
 console.log(chalk.bold.white(chalk.bgMagenta(`🧃 CÓDIGO DE VINCULACIÓN `)), chalk.bold.white(chalk.white(codeBot)))
 } catch (e) {
 console.error(chalk.red("Error al generar el código:"), e)
 }
-}}, 5000)
+}}, 15000)
 }
 }
 
