@@ -1,54 +1,61 @@
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 
+// Anti duplicados
+const processed = new Set()
+
 export async function before(m, { conn, participants = [], groupMetadata }) {
 
-  if (!m.isGroup) return;
-  if (!m.messageStubType) return;
+  if (!m.isGroup) return
+  if (!m.messageStubType) return
 
-  const chat = global.db?.data?.chats?.[m.chat];
-  if (!chat?.welcome) return;
+  const chat = global.db?.data?.chats?.[m.chat]
+  if (!chat?.welcome) return
 
-  const who = m.messageStubParameters?.[0];
-  if (!who) return;
+  // evitar mensajes dobles
+  const id = m.key?.id
+  if (processed.has(id)) return
+  processed.add(id)
 
-  const taguser = `@${who.split("@")[0]}`;
-  const totalMembers = participants.length || 0;
+  setTimeout(() => processed.delete(id), 5000)
 
-  const date = new Date().toLocaleString("es-ES", {
-    timeZone: "America/Mexico_City"
-  });
+  const who = m.messageStubParameters?.[0]
+  if (!who) return
 
-  const groupName = groupMetadata?.subject || "Grupo";
-  const desc = groupMetadata?.desc || "Sin descripción disponible";
+  const taguser = `@${who.split('@')[0]}`
+  const totalMembers = participants.length || 0
 
-  // =========================
-  // 🔥 FOTO DE PERFIL FIX REAL
-  // =========================
-  let ppUser;
+  const date = new Date().toLocaleString('es-ES', {
+    timeZone: 'America/Mexico_City'
+  })
+
+  const groupName = groupMetadata?.subject || 'Grupo'
+  const desc = groupMetadata?.desc || 'Sin descripción'
+
+  // FOTO PERFIL
+  let ppUser
   try {
-    ppUser = await conn.profilePictureUrl(who, "image");
-    if (!ppUser) throw new Error("no pp");
+    ppUser = await conn.profilePictureUrl(who, 'image')
   } catch {
-    // fallback REAL que nunca falla
-    ppUser = "https://telegra.ph/file/1f5c3f7d8c9a1b2c3d4e5.jpg";
+    ppUser = 'https://telegra.ph/file/1f5c3f7d8c9a1b2c3d4e5.jpg'
   }
 
+  // FRASES RANDOM
   const bienvenidaRnd = [
-    "¡Bienvenido al grupo!",
-    "Un nuevo miembro ha llegado",
-    "Disfruta tu estancia",
-    "Que empiece la charla"
-  ][Math.floor(Math.random() * 4)];
+    '¡Bienvenido al grupo!',
+    'Disfruta tu estancia',
+    'Que empiece la diversión',
+    'Nuevo integrante detectado'
+  ][Math.floor(Math.random() * 4)]
 
   const despedidaRnd = [
-    "El usuario ha salido del grupo",
-    "Hasta luego",
-    "Un miembro se fue",
-    "Suerte en tu camino"
-  ][Math.floor(Math.random() * 4)];
+    'Hasta luego',
+    'Un miembro se fue',
+    'Suerte en tu camino',
+    'Te extrañaremos'
+  ][Math.floor(Math.random() * 4)]
 
   // =========================
-  // 👋 ENTRADA
+  // BIENVENIDA
   // =========================
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
 
@@ -59,24 +66,23 @@ export async function before(m, { conn, participants = [], groupMetadata }) {
 
 ┃ 👤 Usuario: ${taguser}
 ┃ 💬 Grupo: ${groupName}
-┃ 📌 Descripción: ${desc}
+┃ 📌 Desc: ${desc}
 ┃ 👥 Miembros: ${totalMembers}
 ┃ 📅 Fecha: ${date}
 
-┃ ⚡ Mensaje: ${bienvenidaRnd}
+┃ ⚡ ${bienvenidaRnd}
 
 ╰━━━❍ Sistema
 `.trim(),
       mentions: [who]
-    });
+    })
   }
 
   // =========================
-  // 👋 SALIDA
+  // DESPEDIDA
   // =========================
   if (
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE
   ) {
 
     return conn.sendMessage(m.chat, {
@@ -86,14 +92,53 @@ export async function before(m, { conn, participants = [], groupMetadata }) {
 
 ┃ 👤 Usuario: ${taguser}
 ┃ 💬 Grupo: ${groupName}
-┃ 👥 Miembros: ${totalMembers - 1}
+┃ 👥 Miembros: ${totalMembers}
 ┃ 📅 Fecha: ${date}
 
-┃ ⚡ Mensaje: ${despedidaRnd}
+┃ ⚡ ${despedidaRnd}
 
 ╰━━━❍ Sistema
 `.trim(),
       mentions: [who]
-    });
+    })
   }
 }
+
+// =========================
+// COMANDO welcome / bv
+// =========================
+
+let handler = async (m, { args }) => {
+
+  let chat = global.db.data.chats[m.chat]
+
+  if (!args[0]) {
+    return m.reply(`
+╭━━━〔 CONFIG 〕━━━⬣
+
+┃ welcome on
+┃ welcome off
+
+┃ bv on
+┃ bv off
+
+╰━━━❍
+`.trim())
+  }
+
+  const enable = args[0].toLowerCase() === 'on'
+
+  chat.welcome = enable
+
+  m.reply(
+    enable
+      ? '✅ Bienvenidas activadas'
+      : '❌ Bienvenidas desactivadas'
+  )
+}
+
+handler.command = ['welcome', 'bv']
+handler.group = true
+handler.admin = true
+
+export default handler
