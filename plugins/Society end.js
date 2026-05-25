@@ -1,0 +1,311 @@
+import fs from 'fs'
+import path from 'path'
+import separadores from '../scty/separadores.json' assert { type: 'json' }
+import emojis from '../scty/emojigrupo.json' assert { type: 'json' }
+
+const dir = 'scty'
+const cuarentenaFile = path.join(dir, 'cuarentena.json')
+
+// =========================
+// CARGAR CUARENTENA
+// =========================
+const loadCuarentena = () => {
+
+  if (!fs.existsSync(cuarentenaFile)) {
+    return {}
+  }
+
+  try {
+
+    return JSON.parse(
+      fs.readFileSync(cuarentenaFile)
+    )
+
+  } catch {
+
+    return {}
+
+  }
+}
+
+// =========================
+// HANDLER
+// =========================
+const handler = async (
+  m,
+  {
+    conn,
+    command,
+    participants
+  }
+) => {
+
+  // =========================
+  // VALIDAR GRUPO
+  // =========================
+  if (!m.isGroup) {
+    return conn.reply(
+      m.chat,
+      '⚠️ Solo en grupos.',
+      m
+    )
+  }
+
+  // =========================
+  // OBTENER ID
+  // =========================
+  const id = command.replace('end', '')
+
+  // =========================
+  // SEPARADOR
+  // =========================
+  let separador =
+    separadores[m.chat]?.[id] ||
+    separadores[id]
+
+  if (!separador) {
+    return conn.reply(
+      m.chat,
+      '❌ Separador no encontrado.',
+      m
+    )
+  }
+
+  // =========================
+  // EMOJI
+  // =========================
+  const args =
+    m.text
+      .trim()
+      .split(/\s+/)
+      .slice(1)
+
+  const emojiGuardado =
+    emojis[m.chat] || '✨'
+
+  const emoji =
+    args[0] || emojiGuardado
+
+  separador = separador.replace(
+    /%emoji%|✨/g,
+    emoji
+  )
+
+  // =========================
+  // VALIDAR RESPUESTA
+  // =========================
+  if (!m.quoted) {
+    return conn.reply(
+      m.chat,
+      '⚠️ Responde a la lista.',
+      m
+    )
+  }
+
+  // =========================
+  // EXTRAER MENCIONES
+  // =========================
+  let users = []
+
+  // mentionedJid
+  if (m.quoted.mentionedJid?.length) {
+    users.push(...m.quoted.mentionedJid)
+  }
+
+  // contextInfo
+  const ctx =
+    m.quoted?.msg?.contextInfo ||
+    m.quoted?.message?.extendedTextMessage?.contextInfo ||
+    {}
+
+  if (ctx.mentionedJid?.length) {
+    users.push(...ctx.mentionedJid)
+  }
+
+  // fallback texto
+  if (!users.length) {
+
+    const text =
+      m.quoted.text ||
+      m.quoted.caption ||
+      ''
+
+    for (const p of participants) {
+
+      const number =
+        p.id.split('@')[0]
+
+      if (text.includes(number)) {
+        users.push(p.id)
+      }
+
+    }
+  }
+
+  // =========================
+  // LIMPIAR
+  // =========================
+  users = [...new Set(users)]
+
+  users = users.filter(
+    u =>
+      u !== conn.user.jid
+  )
+
+  // =========================
+  // METADATA
+  // =========================
+  const metadata =
+    await conn.groupMetadata(m.chat)
+
+  const bot =
+    conn.user.jid
+
+  const admins =
+    metadata.participants
+      .filter(p => p.admin)
+      .map(p => p.id)
+
+  const miembros =
+    metadata.participants
+      .map(p => p.id)
+      .filter(id => id !== bot)
+
+  // =========================
+  // CUARENTENA ACTUALIZADA
+  // =========================
+  const cuarentena =
+    loadCuarentena()
+
+  let permisos =
+    cuarentena[m.chat] || []
+
+  // limpiar permisos inexistentes
+  permisos = permisos.filter(
+    u => miembros.includes(u)
+  )
+
+  // =========================
+  // PENDIENTES
+  // =========================
+  const pendientes =
+    miembros.filter(
+      u =>
+        !users.includes(u) &&
+        !admins.includes(u) &&
+        !permisos.includes(u)
+    )
+
+  // =========================
+  // TEXTO
+  // =========================
+  let txt = ''
+
+  // =========================
+  // AL DÍA
+  // =========================
+  txt += `${separador}\n\n`
+  txt += `✅ 𝐀𝐋 𝐃𝐈́𝐀\n`
+
+  if (users.length) {
+
+    txt += users
+      .map(
+        u =>
+          `${emoji}┃@${u.split('@')[0]}`
+      )
+      .join('\n')
+
+  } else {
+
+    txt += `_Vacío_`
+
+  }
+
+  // =========================
+  // PENDIENTES
+  // =========================
+  txt += `\n\n${separador}\n\n`
+  txt += `⏳ 𝐏𝐄𝐍𝐃𝐈𝐄𝐍𝐓𝐄𝐒\n`
+
+  if (pendientes.length) {
+
+    txt += pendientes
+      .map(
+        u =>
+          `${emoji}┃@${u.split('@')[0]}`
+      )
+      .join('\n')
+
+  } else {
+
+    txt += `*¡Todos al día!*`
+
+  }
+
+  // =========================
+  // PERMISOS
+  // =========================
+  txt += `\n\n${separador}\n\n`
+  txt += `🪪 𝐏𝐄𝐑𝐌𝐈𝐒𝐎𝐒\n`
+
+  if (permisos.length) {
+
+    txt += permisos
+      .map(
+        u =>
+          `${emoji}┃@${u.split('@')[0]}`
+      )
+      .join('\n')
+
+  } else {
+
+    txt += `_Vacío_`
+
+  }
+
+  // =========================
+  // ADMINISTRACIÓN
+  // =========================
+  txt += `\n\n${separador}\n\n`
+  txt += `👑 𝐀𝐃𝐌𝐈𝐍𝐈𝐒𝐓𝐑𝐀𝐂𝐈𝐎́𝐍\n`
+
+  txt += admins
+    .map(
+      u =>
+        `${emoji}┃@${u.split('@')[0]}`
+    )
+    .join('\n')
+
+  txt += `\n\n${separador}`
+
+  // =========================
+  // ENVIAR
+  // =========================
+  return conn.sendMessage(
+    m.chat,
+    {
+      text: txt.trim(),
+      mentions: [
+        ...users,
+        ...pendientes,
+        ...permisos,
+        ...admins
+      ]
+    },
+    { quoted: m }
+  )
+}
+
+// =========================
+// COMANDOS
+// =========================
+handler.command = Array.from(
+  { length: 300 },
+  (_, i) => `end${i + 1}`
+)
+
+handler.group = true
+handler.admin = true
+
+export default handler
