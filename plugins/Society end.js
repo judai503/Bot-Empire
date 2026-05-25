@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+
 import separadores from '../scty/separadores.json' assert { type: 'json' }
 import emojis from '../scty/emojigrupo.json' assert { type: 'json' }
 
@@ -149,7 +150,7 @@ const handler = async (
 
   users = users.filter(
     u =>
-      u !== conn.user.jid
+      u !== (conn.user.jid || conn.user.id)
   )
 
   // =========================
@@ -159,7 +160,7 @@ const handler = async (
     await conn.groupMetadata(m.chat)
 
   const bot =
-    conn.user.jid
+    conn.user.jid || conn.user.id
 
   const admins =
     metadata.participants
@@ -172,7 +173,7 @@ const handler = async (
       .filter(id => id !== bot)
 
   // =========================
-  // CUARENTENA ACTUALIZADA
+  // CUARENTENA
   // =========================
   const cuarentena =
     loadCuarentena()
@@ -180,7 +181,7 @@ const handler = async (
   let permisos =
     cuarentena[m.chat] || []
 
-  // limpiar permisos inexistentes
+  // limpiar permisos inválidos
   permisos = permisos.filter(
     u => miembros.includes(u)
   )
