@@ -1,144 +1,72 @@
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 
-// Anti duplicados
-const processed = new Set()
+const processedEvents = new Set()
 
-export async function before(m, { conn, participants = [], groupMetadata }) {
+export async function before(m, { conn, participants, groupMetadata }) {
+  if (!m.messageStubType || !m.isGroup) return
 
-  if (!m.isGroup) return
-  if (!m.messageStubType) return
+  const key = m.key?.id || m.id
+  if (!key) return
 
-  const chat = global.db?.data?.chats?.[m.chat]
-  if (!chat?.welcome) return
+  if (processedEvents.has(key)) return
+  processedEvents.add(key)
+  setTimeout(() => processedEvents.delete(key), 60000)
 
-  // evitar mensajes dobles
-  const id = m.key?.id
-  if (processed.has(id)) return
-  processed.add(id)
-
-  setTimeout(() => processed.delete(id), 5000)
+  const chat = global.db?.data?.chats?.[m.chat] || {}
+  if (!chat.welcome) return
 
   const who = m.messageStubParameters?.[0]
   if (!who) return
 
-  const taguser = `@${who.split('@')[0]}`
-  const totalMembers = participants.length || 0
+  const taguser = `@${who.split("@")[0]}`
+  const totalMembers = participants?.length || 0
 
-  const date = new Date().toLocaleString('es-ES', {
-    timeZone: 'America/Mexico_City'
+  const date = new Date().toLocaleString("es-ES", {
+    timeZone: "America/Mexico_City"
   })
 
-  const groupName = groupMetadata?.subject || 'Grupo'
-  const desc = groupMetadata?.desc || 'Sin descripción'
+  const descripcion = groupMetadata.desc || "Sin descripción"
 
-  // FOTO PERFIL
-  let ppUser
-  try {
-    ppUser = await conn.profilePictureUrl(who, 'image')
-  } catch {
-    ppUser = 'https://telegra.ph/file/1f5c3f7d8c9a1b2c3d4e5.jpg'
-  }
+  // 🖼️ TARJETA MODERNA (fondo blanco tipo WhatsApp)
+  const cardImage = `https://dummyimage.com/900x500/ffffff/25d366.png&text=BIENVENIDO+A+${encodeURIComponent(groupMetadata.subject)}`
 
-  // FRASES RANDOM
-  const bienvenidaRnd = [
-    '¡Bienvenido al grupo!',
-    'Disfruta tu estancia',
-    'Que empiece la diversión',
-    'Nuevo integrante detectado'
-  ][Math.floor(Math.random() * 4)]
-
-  const despedidaRnd = [
-    'Hasta luego',
-    'Un miembro se fue',
-    'Suerte en tu camino',
-    'Te extrañaremos'
-  ][Math.floor(Math.random() * 4)]
-
-  // =========================
   // BIENVENIDA
-  // =========================
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
 
-    return conn.sendMessage(m.chat, {
-      image: { url: ppUser },
-      caption: `
-╭━━━〔 👋 BIENVENIDO/A 〕━━━⬣
+    const bienvenida = `
+╭━━━〔 BIENVENIDO/A 〕━━━╮
+👤 Usuario: ${taguser}
+💬 Grupo: ${groupMetadata.subject}
+📅 Fecha: ${date}
+📌 Descripción: ${descripcion}
+👥 Miembros: ${totalMembers + 1}
+╰━━━━━━━━━━━━━━━━━━━━━━╯
+`.trim()
 
-┃ 👤 Usuario: ${taguser}
-┃ 💬 Grupo: ${groupName}
-┃ 📌 Desc: ${desc}
-┃ 👥 Miembros: ${totalMembers}
-┃ 📅 Fecha: ${date}
-
-┃ ⚡ ${bienvenidaRnd}
-
-╰━━━❍ Sistema
-`.trim(),
+    await conn.sendMessage(m.chat, {
+      image: { url: cardImage },
+      caption: bienvenida,
       mentions: [who]
     })
   }
 
-  // =========================
   // DESPEDIDA
-  // =========================
   if (
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
   ) {
 
-    return conn.sendMessage(m.chat, {
-      image: { url: ppUser },
-      caption: `
-╭━━━〔 👋 DESPEDIDA 〕━━━⬣
+    const despedida = `
+╭━━━〔 DESPEDIDA 〕━━━╮
+👤 Usuario: ${taguser}
+📅 Fecha: ${date}
+╰━━━━━━━━━━━━━━━━━━━━╯
+`.trim()
 
-┃ 👤 Usuario: ${taguser}
-┃ 💬 Grupo: ${groupName}
-┃ 👥 Miembros: ${totalMembers}
-┃ 📅 Fecha: ${date}
-
-┃ ⚡ ${despedidaRnd}
-
-╰━━━❍ Sistema
-`.trim(),
+    await conn.sendMessage(m.chat, {
+      image: { url: cardImage },
+      caption: despedida,
       mentions: [who]
     })
   }
 }
-
-// =========================
-// COMANDO welcome / bv
-// =========================
-
-let handler = async (m, { args }) => {
-
-  let chat = global.db.data.chats[m.chat]
-
-  if (!args[0]) {
-    return m.reply(`
-╭━━━〔 CONFIG 〕━━━⬣
-
-┃ welcome on
-┃ welcome off
-
-┃ bv on
-┃ bv off
-
-╰━━━❍
-`.trim())
-  }
-
-  const enable = args[0].toLowerCase() === 'on'
-
-  chat.welcome = enable
-
-  m.reply(
-    enable
-      ? '✅ Bienvenidas activadas'
-      : '❌ Bienvenidas desactivadas'
-  )
-}
-
-handler.command = ['welcome', 'bv']
-handler.group = true
-handler.admin = true
-
-export default handler
