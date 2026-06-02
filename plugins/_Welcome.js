@@ -18,17 +18,14 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const who = m.messageStubParameters?.[0]
   if (!who) return
 
-  const taguser = `@${who.split("@")[0]}`
+  const taguser = `@${who.split('@')[0]}`
   const totalMembers = participants?.length || 0
 
-  const date = new Date().toLocaleString("es-ES", {
-    timeZone: "America/Mexico_City"
+  const date = new Date().toLocaleString('es-ES', {
+    timeZone: 'America/Mexico_City'
   })
 
-  const descripcion = groupMetadata.desc || "Sin descripción"
-
-  // 🖼️ TARJETA MODERNA (fondo blanco tipo WhatsApp)
-  const cardImage = `https://dummyimage.com/900x500/ffffff/25d366.png&text=BIENVENIDO+A+${encodeURIComponent(groupMetadata.subject)}`
+  const descripcion = groupMetadata.desc || 'Sin descripción'
 
   // BIENVENIDA
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
@@ -44,8 +41,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 `.trim()
 
     await conn.sendMessage(m.chat, {
-      image: { url: cardImage },
-      caption: bienvenida,
+      text: bienvenida,
       mentions: [who]
     })
   }
@@ -64,8 +60,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 `.trim()
 
     await conn.sendMessage(m.chat, {
-      image: { url: cardImage },
-      caption: despedida,
+      text: despedida,
       mentions: [who]
     })
   }
