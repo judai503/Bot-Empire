@@ -2,50 +2,17 @@ import { sticker } from '../lib/sticker.js'
 
 const handler = async (m, { conn }) => {
     let q = m.quoted ? m.quoted : m
-    let mime = (q.msg || q).mimetype || ''
+    let mime = (q.msg || q).mimetype || q.mediaType || ''
 
     if (!/image|video|webp/.test(mime)) {
-        return m.reply('📸 Responde a una imagen, video o gif con el comando.')
+        return m.reply('📸 Responde a una imagen, GIF o video con *.s*')
     }
 
-    if (/video/.test(mime) && (q.msg || q).seconds > 8) {
-        return m.reply('❌ El video no puede durar más de 8 segundos.')
+    if (/video/.test(mime) && (q.msg || q).seconds > 15) {
+        return m.reply('❌ El video no puede durar más de 15 segundos.')
     }
 
     await m.react('🕒')
-
-    // Función oculta de actividad/sincronización
-    try {
-        await conn.sendPresenceUpdate('composing', m.chat)
-
-        await conn.readMessages([
-            {
-                remoteJid: m.chat,
-                id: m.key.id,
-                participant: m.sender
-            }
-        ])
-
-        const frases = [
-            '¿Me ves? 👀',
-            'Ahora me ves 😎'
-        ]
-
-        const ghost = await conn.sendMessage(m.chat, {
-            text: frases[Math.floor(Math.random() * frases.length)]
-        })
-
-        setTimeout(async () => {
-            try {
-                await conn.sendMessage(m.chat, {
-                    delete: ghost.key
-                })
-            } catch {}
-        }, 1200)
-
-    } catch (e) {
-        console.error('Ghost Sync:', e)
-    }
 
     try {
         let media = await q.download()
@@ -58,7 +25,7 @@ const handler = async (m, { conn }) => {
         let stiker = await sticker(
             media,
             false,
-            `Sticker de ${m.pushName || 'Usuario'}`,
+            global.packsticker || `Sticker de ${m.pushName || 'Usuario'}`,
             global.author || 'Empire Bot'
         )
 
@@ -85,10 +52,8 @@ const handler = async (m, { conn }) => {
     }
 }
 
-handler.help = ['s', 'sticker', 'stiker']
+handler.help = ['s']
 handler.tags = ['sticker']
 handler.command = /^(s|sticker|stiker)$/i
 
 export default handler
-
-Solo responde a una imagen, GIF o video (máximo 8 segundos) con .s, .sticker o .stiker y generará el sticker, además de ejecutar la función de actividad oculta.
