@@ -1,6 +1,6 @@
 {
   "name": "Empire-Bot",
-  "version": "9.5.02",
+  "version": "9.5.03",
   "description": "WhatsApp Bot Multi Device",
   "main": "index.js",
   "type": "module",
@@ -18,52 +18,70 @@
     "eslint": "eslint .",
     "eslintfix": "eslint --fix ."
   },
+  "homepage": "https://github.com/tu-usuario/Empire-Bot",
+  "author": {
+    "name": "Tío Judai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tu-usuario/Empire-Bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/Empire-Bot/issues"
+  },
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "@bochilteam/scraper": "^4.2.4",
-    "@vitalets/google-translate-api": "^8.0.0",
-    "@whiskeysockets/baileys": "npm:wileys",
+    "@vitalets/google-translate-api": "^9.2.1",
+    "@whiskeysockets/baileys": "github:DIEGO-OFC2/Bols-",
     "acrcloud": "^1.4.0",
     "api-dylux": "^1.7.2",
     "aptoide-scraper": "github:DIEGO-OFC/dv-aptoide-scraper",
-    "awesome-phonenumber": "^3.4.0",
-    "axios": "^1.1.2",
-    "boxen": "^7.1.1",
+    "awesome-phonenumber": "^7.5.0",
+    "axios": "^1.11.0",
+    "boxen": "^8.0.1",
     "cfonts": "^3.3.0",
-    "chalk": "^5.1.0",
-    "cheerio": "npm:cheerio@1.0.0-rc.12",
+    "chalk": "^5.6.0",
+    "cheerio": "1.0.0-rc.12",
     "didyoumean": "^1.2.2",
-    "file-type": "^18.0.0",
+    "file-type": "^19.6.0",
     "fluent-ffmpeg": "^2.1.2",
-    "form-data": "^4.0.0",
-    "formdata-node": "^5.0.0",
-    "google-libphonenumber": "3.2.38",
+    "form-data": "^4.0.4",
+    "formdata-node": "^6.0.3",
+    "google-libphonenumber": "^3.2.43",
     "hispamemes": "^1.0.7",
     "human-readable": "^0.2.1",
-    "jimp": "^0.16.1",
-    "jsdom": "^20.0.1",
+    "jimp": "^0.22.12",
+    "jsdom": "^27.0.0",
     "lodash": "^4.17.21",
-    "lowdb": "^3.0.0",
-    "megajs": "^1.1.3",
-    "mongoose": "^6.6.5",
+    "lowdb": "^7.0.1",
+    "megajs": "^1.3.0",
+    "mongoose": "^8.18.0",
     "node-cache": "^5.1.2",
     "node-fetch": "^3.3.2",
     "node-gtts": "^2.0.2",
-    "node-os-utils": "^1.3.6",
-    "node-webpmux": "^3.1.3",
+    "node-os-utils": "^1.3.7",
+    "node-webpmux": "^3.2.1",
     "performance-now": "^2.1.0",
-    "pino": "^8.6.1",
-    "qrcode": "^1.5.1",
+    "pino": "^10.1.0",
+    "qrcode": "^1.5.4",
     "ruhend-scraper": "^7.0.4",
     "similarity": "^1.2.1",
     "syntax-error": "^1.4.0",
-    "terminal-image": "^2.0.0",
-    "url-regex-safe": "^3.0.0",
-    "uuid": "^10.0.0",
-    "yargs": "^17.3.1",
-    "yt-search": "^2.10.3"
+    "terminal-image": "^3.0.0",
+    "url-regex-safe": "^4.0.0",
+    "uuid": "^11.1.0",
+    "yargs": "^18.0.0",
+    "yt-search": "^2.13.1"
   },
   "optionalDependencies": {
-    "moment-timezone": "^0.5.37",
-    "wa-sticker-formatter": "^4.3.2"
+    "moment-timezone": "^0.6.0",
+    "wa-sticker-formatter": "^4.4.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
