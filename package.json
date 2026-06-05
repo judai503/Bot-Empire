@@ -18,22 +18,10 @@
     "eslint": "eslint .",
     "eslintfix": "eslint --fix ."
   },
-  "homepage": "https://github.com/tu-usuario/Empire-Bot",
-  "author": {
-    "name": "Tío Judai"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tu-usuario/Empire-Bot.git"
-  },
-  "bugs": {
-    "url": "https://github.com/tu-usuario/Empire-Bot/issues"
-  },
-  "license": "GPL-3.0-or-later",
   "dependencies": {
     "@bochilteam/scraper": "^4.2.4",
     "@vitalets/google-translate-api": "^8.0.0",
-    "@whiskeysockets/baileys": "github:JoseXrl15k/XrlBaileyszzz",
+    "@whiskeysockets/baileys": "npm:wileys",
     "acrcloud": "^1.4.0",
     "api-dylux": "^1.7.2",
     "aptoide-scraper": "github:DIEGO-OFC/dv-aptoide-scraper",
@@ -62,7 +50,6 @@
     "node-gtts": "^2.0.2",
     "node-os-utils": "^1.3.6",
     "node-webpmux": "^3.1.3",
-    "openai": "^3.3.0",
     "performance-now": "^2.1.0",
     "pino": "^8.6.1",
     "qrcode": "^1.5.1",
