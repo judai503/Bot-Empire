@@ -1,8 +1,39 @@
 {
+  "name": "Empire-Bot",
+  "version": "9.5.02",
+  "description": "WhatsApp Bot Multi Device",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "lib": "lib",
+    "src": "src",
+    "plugins": "plugins"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "qr": "node index.js qr",
+    "code": "node index.js code",
+    "test": "node test.js",
+    "test2": "nodemon index.js",
+    "eslint": "eslint .",
+    "eslintfix": "eslint --fix ."
+  },
+  "homepage": "https://github.com/tu-usuario/Empire-Bot",
+  "author": {
+    "name": "Tío Judai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tu-usuario/Empire-Bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/Empire-Bot/issues"
+  },
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "@bochilteam/scraper": "^4.2.4",
     "@vitalets/google-translate-api": "^8.0.0",
-    "@whiskeysockets/baileys": "github:this-xyz/baileys",
+    "@whiskeysockets/baileys": "npm:wileys",
     "acrcloud": "^1.4.0",
     "api-dylux": "^1.7.2",
     "aptoide-scraper": "github:DIEGO-OFC/dv-aptoide-scraper",
@@ -43,5 +74,9 @@
     "uuid": "^10.0.0",
     "yargs": "^17.3.1",
     "yt-search": "^2.10.3"
+  },
+  "optionalDependencies": {
+    "moment-timezone": "^0.5.37",
+    "wa-sticker-formatter": "^4.3.2"
   }
 }
