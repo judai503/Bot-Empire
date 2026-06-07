@@ -122,27 +122,19 @@ const opcionTexto = chalk.bold.cyan
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 const question = (texto) => new Promise((resolver) => rl.question(texto, resolver))
 
-let opcion
+let opcion = '2'; // Forzamos por defecto el uso de código de texto
 if (methodCodeQR) {
 opcion = '1'
 }
-if (!methodCodeQR && !methodCode && !fs.existsSync(`./${global.sessions}/creds.json`)) {
-do {
-opcion = await question(colores('🧃 Seleccione una opción:\n') + opcionQR('1. Con código QR\n') + opcionTexto('2. Con código de texto de 8 dígitos\n--> '))
-
-if (!/^[1-2]$/.test(opcion)) {
-console.log(chalk.bold.redBright(`⚡ No se permiten numeros que no sean 1 o 2, tampoco letras o símbolos especiales.`))
-}} while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${global.sessions}/creds.json`))
-} 
 
 console.info = () => {} 
 console.debug = () => {} 
 
 const connectionOptions = {
-logger: pino({ level: 'silent' }),
+logger: pino({ level: 'silent' }), // Regresado a 'silent'
 printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
 mobile: MethodMobile, 
-browser: ['Google Chrome', 'Chrome', '124.0.0.6367.119'],
+browser: ['Ubuntu', 'Chrome', '124.0.0.6367.119'], 
 auth: {
 creds: state.creds,
 keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
@@ -158,7 +150,7 @@ return msg?.message || ""
 },
 msgRetryCounterCache,
 msgRetryCounterMap,
-defaultQueryTimeoutMs: undefined,
+defaultQueryTimeoutMs: 60000,
 version,
 }
 
@@ -191,7 +183,7 @@ console.log(chalk.bold.white(chalk.bgMagenta(`🧃 CÓDIGO DE VINCULACIÓN `)), 
 } catch (e) {
 console.error(chalk.red("Error al generar el código:"), e)
 }
-}}, 15000)
+}}, 30000)
 }
 }
 
