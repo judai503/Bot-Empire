@@ -4,7 +4,6 @@ const handler = async (m, { conn, command }) => {
   await m.react('⚡️');
 
   try {
-
     if (!m.isGroup) {
       return m.reply("⚠️ Este comando solo funciona en grupos.");
     }
@@ -25,7 +24,6 @@ const handler = async (m, { conn, command }) => {
     if (!action) return;
 
     if (action === "kick") {
-
       await conn.groupParticipantsUpdate(
         m.chat,
         [user],
@@ -33,24 +31,6 @@ const handler = async (m, { conn, command }) => {
       );
 
       await m.react("🔴");
-
-      return conn.sendMessage(m.chat, {
-        text: `
-╭━━━〔 🔴 USUARIO EXPULSADO 〕━━━⬣
-
-┃ 👤 Usuario:
-┃ ➜ @${user.split("@")[0]}
-┃
-┃ 💥 Estado:
-┃ ➜ Ha sido expulsado del grupo
-┃
-┃ 👮‍♂️ Ejecutado por:
-┃ ➜ @${m.sender.split("@")[0]}
-
-╰━━━❍ ${wm}
-`,
-        mentions: [user, m.sender]
-      }, { quoted: m });
     }
 
   } catch (error) {
@@ -61,7 +41,6 @@ const handler = async (m, { conn, command }) => {
 };
 
 handler.command = ["kick", "ban", "alv"];
-
 handler.tags = ["grupo"];
 handler.admin = true;
 handler.group = true;
