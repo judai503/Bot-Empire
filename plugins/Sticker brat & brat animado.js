@@ -31,12 +31,54 @@ const handler = async (m, { conn, text, command }) => {
         const apiBrat = b('aHR0cHM6Ly9zeWxwaHl5Lnh5ei90b29scy9icmF0');
         const apiKey = b('c3lscGh5LTZmMTUwZA==');
 
-        // .brat = Static | .bratv = Anim
         const tipo = /^bratv$/i.test(command)
             ? 'Anim'
             : 'Static';
 
-        const url = `${apiBrat}?text=${encodeURIComponent(contenidoTexto)}&color=Blanco&fondo=Negro&type=${tipo}&api_key=${apiKey}`;
+        // 🎨 Combinaciones aleatorias
+        const estilos = [
+            { color: 'Blanco', fondo: 'Negro' },
+            { color: 'Negro', fondo: 'Blanco' },
+
+            { color: 'Naranja', fondo: 'Blanco' },
+            { color: 'Rosa', fondo: 'Blanco' },
+            { color: 'Azul', fondo: 'Blanco' },
+            { color: 'Verde', fondo: 'Blanco' },
+            { color: 'Rojo', fondo: 'Blanco' },
+            { color: 'Morado', fondo: 'Blanco' },
+            { color: 'Amarillo', fondo: 'Blanco' },
+            { color: 'Cyan', fondo: 'Blanco' },
+
+            { color: 'Blanco', fondo: 'Rojo' },
+            { color: 'Blanco', fondo: 'Azul' },
+            { color: 'Blanco', fondo: 'Verde' },
+            { color: 'Blanco', fondo: 'Morado' },
+            { color: 'Blanco', fondo: 'Rosa' },
+            { color: 'Blanco', fondo: 'Naranja' },
+            { color: 'Blanco', fondo: 'Cyan' },
+
+            { color: 'Negro', fondo: 'Rojo' },
+            { color: 'Negro', fondo: 'Azul' },
+            { color: 'Negro', fondo: 'Verde' },
+            { color: 'Negro', fondo: 'Morado' },
+            { color: 'Negro', fondo: 'Rosa' },
+            { color: 'Negro', fondo: 'Naranja' },
+            { color: 'Negro', fondo: 'Amarillo' },
+            { color: 'Negro', fondo: 'Cyan' },
+
+            { color: 'Rojo', fondo: 'Negro' },
+            { color: 'Azul', fondo: 'Negro' },
+            { color: 'Verde', fondo: 'Negro' },
+            { color: 'Morado', fondo: 'Negro' },
+            { color: 'Rosa', fondo: 'Negro' },
+            { color: 'Amarillo', fondo: 'Negro' },
+            { color: 'Cyan', fondo: 'Negro' }
+        ];
+
+        const estilo = estilos[Math.floor(Math.random() * estilos.length)];
+
+        const url =
+            `${apiBrat}?text=${encodeURIComponent(contenidoTexto)}&color=${encodeURIComponent(estilo.color)}&fondo=${encodeURIComponent(estilo.fondo)}&type=${tipo}&api_key=${apiKey}`;
 
         const res = await fetch(url);
 
@@ -50,8 +92,8 @@ const handler = async (m, { conn, text, command }) => {
         const stiker = await sticker(
             buffer,
             false,
-            `Brat de ${m.pushName || 'Usuario'}`,
-            global.author || 'Empire Bot'
+            'Brat',
+            'Api gracias a 𝘽𝙮 𝘽𝙖𝙧𝙗𝙤𝙯𝙖 | Zona Developers'
         );
 
         if (!stiker) {
@@ -59,25 +101,7 @@ const handler = async (m, { conn, text, command }) => {
             return m.reply('*No se pudo generar el sticker.*');
         }
 
-        const infoMessage = `
-━━━━━━━━━━━━━━━
-   🎭 *B R A T*
-━━━━━━━━━━━━━━━
-> 📝 *Texto:* ${contenidoTexto}
-> 👤 *Usuario:* ${m.pushName || 'Usuario'}
-> ⚙️ *Tipo:* ${tipo === 'Anim' ? 'Animado' : 'Estático'}
-━━━━━━━━━━━━━━━
-⚡ Api por 𝘽𝙮 𝘽𝙖𝙧𝙗𝙤𝙯𝙖 / 𝙕𝙤𝙣𝙖 𝘿𝙚𝙫𝙚𝙡𝙤𝙥𝙚𝙧𝙨
-`.trim();
-
         await m.react('🎨');
-
-        await conn.reply(
-            m.chat,
-            infoMessage,
-            m,
-            { mentions: [m.sender] }
-        );
 
         await conn.sendFile(
             m.chat,
