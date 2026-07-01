@@ -49,7 +49,7 @@ const handler = async (
   // =========================
   if (command === 'delcuarentena') {
 
-    if (!db[m.chat]) {
+    if (!db[m.chat]?.length) {
       return conn.reply(
         m.chat,
         '⚠️ No hay cuarentena',
@@ -57,14 +57,51 @@ const handler = async (
       )
     }
 
-    delete db[m.chat]
+    let targets = []
+
+    if (m.mentionedJid?.length) {
+      targets.push(...m.mentionedJid)
+    }
+
+    targets = [...new Set(targets)]
+
+    // eliminar toda la cuarentena
+    if (!targets.length) {
+
+      delete db[m.chat]
+
+      saveDB()
+
+      return conn.reply(
+        m.chat,
+        '✅ Cuarentena eliminada',
+        m
+      )
+    }
+
+    db[m.chat] = db[m.chat].filter(
+      x => !targets.includes(x)
+    )
+
+    if (!db[m.chat].length) {
+      delete db[m.chat]
+    }
 
     saveDB()
 
-    return conn.reply(
+    let txt = `✅ *USUARIOS RETIRADOS DE CUARENTENA*\n\n`
+
+    targets.forEach((u, i) => {
+      txt += `${i + 1}. @${u.split('@')[0]}\n`
+    })
+
+    return conn.sendMessage(
       m.chat,
-      '✅ Cuarentena eliminada',
-      m
+      {
+        text: txt.trim(),
+        mentions: targets
+      },
+      { quoted: m }
     )
   }
 
@@ -75,11 +112,9 @@ const handler = async (
 
     let users = db[m.chat] || []
 
-    // participantes actuales
     const participantesIds =
       participants.map(p => p.id)
 
-    // limpiar usuarios que salieron
     db[m.chat] = users.filter(
       u => participantesIds.includes(u)
     )
@@ -88,9 +123,7 @@ const handler = async (
 
     users = db[m.chat]
 
-    // validar
     if (!users.length) {
-
       return conn.reply(
         m.chat,
         '✅ No hay internados',
@@ -105,71 +138,66 @@ const handler = async (
       txt += `${i + 1}. @${u.split('@')[0]}\n`
     })
 
-    return conn.sendMessage(m.chat, {
-      text: txt.trim(),
-      mentions: users
-    }, { quoted: m })
+    return conn.sendMessage(
+      m.chat,
+      {
+        text: txt.trim(),
+        mentions: users
+      },
+      { quoted: m }
+    )
   }
 
   // =========================
   // CUARENTENA
   // =========================
-  if (!m.quoted) {
-    return conn.reply(
-      m.chat,
-      '⚠️ Responde al tagall/lista',
-      m
-    )
-  }
-
   let users = []
 
-  // =========================
-  // SACAR MENCIONES
-  // =========================
-
-  // mentionedJid normal
-  if (m.quoted.mentionedJid?.length) {
-    users.push(...m.quoted.mentionedJid)
+  // menciones directas
+  if (m.mentionedJid?.length) {
+    users.push(...m.mentionedJid)
   }
 
-  // contextInfo
-  const ctx =
-    m.quoted?.msg?.contextInfo ||
-    m.quoted?.message?.extendedTextMessage?.contextInfo ||
-    {}
+  // responder a tagall/lista
+  if (m.quoted) {
 
-  if (ctx.mentionedJid?.length) {
-    users.push(...ctx.mentionedJid)
-  }
+    if (m.quoted.mentionedJid?.length) {
+      users.push(...m.quoted.mentionedJid)
+    }
 
-  // =========================
-  // SI NO DETECTA:
-  // usar texto + participants
-  // =========================
-  if (!users.length) {
+    const ctx =
+      m.quoted?.msg?.contextInfo ||
+      m.quoted?.message?.extendedTextMessage?.contextInfo ||
+      {}
 
-    const text =
-      m.quoted.text ||
-      m.quoted.caption ||
-      ''
+    if (ctx.mentionedJid?.length) {
+      users.push(...ctx.mentionedJid)
+    }
 
-    for (const p of participants) {
+    // respaldo por texto
+    if (!users.length) {
 
-      const number =
-        p.id.split('@')[0]
+      const text =
+        m.quoted.text ||
+        m.quoted.caption ||
+        ''
 
-      // detectar número en texto
-      if (text.includes(number)) {
-        users.push(p.id)
+      for (const p of participants) {
+
+        const number =
+          p.id.split('@')[0]
+
+        if (text.includes(number)) {
+          users.push(p.id)
+        }
+
       }
 
     }
+
   }
 
-  // =========================
-  // LIMPIAR
-  // =========================
+  // limpiar duplicados
   users = [...new Set(users)]
 
   users = users.filter(
@@ -178,27 +206,20 @@ const handler = async (
       u !== conn.user.jid
   )
 
-  // =========================
-  // VALIDAR
-  // =========================
   if (!users.length) {
     return conn.reply(
       m.chat,
-      '❌ No encontré usuarios',
+      '⚠️ Responde a un tagall/lista o menciona usuarios.\n\nEjemplos:\n.cuarentena @usuario\n.cuarentena @user1 @user2',
       m
     )
   }
 
-  // =========================
-  // CREAR GRUPO
-  // =========================
+  // crear lista
   if (!db[m.chat]) {
     db[m.chat] = []
   }
 
-  // =========================
-  // GUARDAR
-  // =========================
+  // guardar
   for (const user of users) {
 
     if (!db[m.chat].includes(user)) {
@@ -209,20 +230,22 @@ const handler = async (
 
   saveDB()
 
-  // =========================
-  // RESPUESTA
-  // =========================
   let txt = `🚨 *CUARENTENA ACTIVADA*\n\n`
   txt += `👥 Usuarios registrados:\n\n`
 
-  users.forEach(user => {
-    txt += `➤ @${user.split('@')[0]}\n`
+  users.forEach((user, i) => {
+    txt += `${i + 1}. @${user.split('@')[0]}\n`
   })
 
-  await conn.sendMessage(m.chat, {
-    text: txt.trim(),
-    mentions: users
-  }, { quoted: m })
+  await conn.sendMessage(
+    m.chat,
+    {
+      text: txt.trim(),
+      mentions: users
+    },
+    { quoted: m }
+  )
+
 }
 
 handler.command = [
