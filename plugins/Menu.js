@@ -1,230 +1,100 @@
-const wm = `${global.botname} | ${global.owner?.[0]?.[1] || "Owner"}`;
+let handler = async (m, { conn }) => {
 
-const handler = async (m, { conn }) => {
+let txt = `
+╔═══━━━〔 ✦ 𝐌𝐄𝐍𝐔́ 𝐃𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎𝐒 ✦ 〕━━━═══╗
 
-  await m.react('⚡️');
+╭─❖ 『 👥 𝐆𝐄𝐒𝐓𝐈𝐎́𝐍 𝐃𝐄 𝐆𝐑𝐔𝐏𝐎𝐒 』
+│
+│ ✦ 𝐀𝐧𝐭𝐢𝐥𝐢𝐧𝐤
+│ ↳ Elimina automáticamente cualquier enlace enviado al grupo.
+│
+│ ✦ 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 ┆ 𝐁𝐯
+│ ↳ Envía la descripción del grupo como mensaje de bienvenida.
+│
+│ ✦ 𝐌𝐨𝐝𝐨𝐚𝐝𝐦𝐢𝐧
+│ ↳ Solo los administradores pueden usar el bot.
+│
+╰─────────────────────❖
 
-  try {
+╭─❖ 『 🛠️ 𝐀𝐃𝐌𝐈𝐍𝐈𝐒𝐓𝐑𝐀𝐂𝐈𝐎́𝐍 』
+│
+│ ✦ 𝐓𝐨𝐝𝐨𝐬 ┆ 𝐓𝐚𝐠𝐚𝐥𝐥 ┆ 𝐈𝐧𝐯𝐨𝐜𝐚𝐫
+│ ↳ Etiqueta a todos los integrantes del grupo.
+│
+│ ✦ 𝐄𝐦𝐨𝐭𝐚𝐠
+│ ↳ Cambia el emoji usado por .todos, .tagall e .invocar.
+│
+│ ✦ 𝐇𝐢𝐝𝐞𝐭𝐚𝐠 ┆ 𝐍 ┆ 𝐍𝐨𝐭𝐢𝐟𝐲 ┆ 𝐓𝐚𝐠
+│ ↳ Notifica a todos los miembros con un mensaje oculto.
+│
+│ ✦ 𝐊𝐢𝐜𝐤 ┆ 𝐀𝐥𝐯 ┆ 𝐁𝐚𝐧
+│ ↳ Expulsa usuarios respondiendo o mencionándolos.
+│
+│ ✦ 𝐏𝐫𝐨𝐦𝐨𝐭𝐞 ┆ 𝐃𝐚𝐫𝐚𝐝𝐦𝐢𝐧 ┆ 𝐃𝐚𝐫𝐩𝐨𝐝𝐞𝐫
+│ ↳ Concede privilegios de administrador.
+│
+│ ✦ 𝐃𝐞𝐦𝐨𝐭𝐞 ┆ 𝐐𝐮𝐢𝐭𝐚𝐫𝐚𝐝𝐦𝐢𝐧
+│ ↳ Revoca privilegios de administrador.
+│
+│ ✦ 𝐀𝐛𝐫𝐢𝐫 ┆ 𝐆𝐫𝐮𝐩𝐨𝐚𝐛𝐫𝐢𝐫
+│ ↳ Permite que todos puedan enviar mensajes.
+│
+│ ✦ 𝐂𝐞𝐫𝐫𝐚𝐫 ┆ 𝐆𝐫𝐮𝐩𝐨𝐜𝐞𝐫𝐫𝐚𝐫
+│ ↳ Solo los administradores podrán escribir.
+│
+│ ✦ 𝐃𝐞𝐥𝐞𝐭𝐞 ┆ 𝐃𝐞𝐥 ┆ 𝐃
+│ ↳ Borra mensajes respondiéndolos.
+│
+╰─────────────────────❖
 
-    const menu = `
-╭━━━〔 ⚙️ ADMIN MENU 〕━━━⬣
+╭─❖ 『 🧰 𝐇𝐄𝐑𝐑𝐀𝐌𝐈𝐄𝐍𝐓𝐀𝐒 』
+│
+│ ✦ 𝐁𝐫𝐚𝐭 ┆ 𝐁𝐫𝐚𝐭𝐯
+│ ↳ Crea stickers con texto animado o estático.
+│
+│ ✦ 𝐒 ┆ 𝐒𝐭𝐢𝐜𝐤𝐞𝐫
+│ ↳ Convierte imágenes y videos en stickers.
+│
+│ ✦ 𝐕𝐞𝐫
+│ ↳ Reenvía mensajes de una sola visualización.
+│
+╰─────────────────────❖
 
-┃ 🖼️ CONFIGURACIÓN
-┃
-┃ 「 .setpp 」
-┃ ➜ Cambia la foto del grupo
-┃    respondiendo a una imagen.
-┃
-┃ 「 .setname 」
-┃ ➜ Permite cambiar el nombre actual
-┃    del grupo por el texto que escribas.
-┃
-┃ 📌 Ejemplo:
-┃ .setname Empire Community
-┃
-┃ 「 .setdescription 」
-┃ ➜ Cambia la descripción
-┃    actual del grupo.
-┃
-┃ 「 .description 」
-┃ ➜ Muestra la descripción
-┃    configurada del grupo.
-┃
+╭─❖ 『 🏥 𝐒𝐎𝐂𝐈𝐄𝐃𝐀𝐃 』
+│
+│ ✦ 𝐄𝐧𝐝 + número + emoji
+│ ↳ Completa listas de revisión.
+│ ↳ Ejemplo: .end1 🌎
+│
+│ ✦ 𝐂𝐮𝐚𝐫𝐞𝐧𝐭𝐞𝐧𝐚
+│ ↳ Asigna permisos especiales respondiendo una lista
+│   o mencionando usuarios.
+│
+│ ✦ 𝐃𝐞𝐥𝐜𝐮𝐚𝐫𝐞𝐧𝐭𝐞𝐧𝐚
+│ ↳ Elimina permisos de cuarentena.
+│
+│ ✦ 𝐈𝐧𝐭𝐞𝐫𝐧𝐚𝐝𝐨𝐬
+│ ↳ Muestra los usuarios registrados.
+│
+│ ✦ 𝐃𝐥𝐢𝐬𝐭 + número + emoji
+│ ↳ Genera listas diarias.
+│ ↳ Ejemplo: .dlist66 🎁
+│
+│ ✦ 𝐄𝐧𝐮𝐦
+│ ↳ Enumera listas automáticamente.
+│
+╰─────────────────────❖
 
-┃ ⚙️ CONFIGURACIÓN DEL SISTEMA
-┃
-┃ 「 .welcome on/off 」
-┃ ➜ Activa o desactiva el sistema
-┃    de bienvenida en el grupo.
-┃
-┃ 「 .bv / .bienvenida 」
-┃ ➜ Alias de welcome (mismo sistema).
-┃
-┃ 「 .antilink on/off 」
-┃ ➜ Bloquea enlaces dentro del grupo
-┃    para evitar spam.
-┃
-┃ 「 .antilink2 on/off 」
-┃ ➜ Sistema anti-links más estricto
-┃    (detección avanzada).
-┃
-┃ 「 .reaction on/off 」
-┃ ➜ Activa o desactiva reacciones
-┃    automáticas del bot.
-┃
-┃ 「 .detect on/off 」
-┃ ➜ Detecta eventos del grupo
-┃    como entradas y salidas.
-┃
-┃ 「 .detect2 / .eventos 」
-┃ ➜ Sistema avanzado de eventos
-┃    del grupo.
-┃
-┃ 「 .nsfw on/off 」
-┃ ➜ Activa o desactiva contenido
-┃    +18 (NSFW).
-┃
-┃ 「 .modoadmin on/off 」
-┃ ➜ Solo administradores pueden
-┃    interactuar con el bot.
-┃
-┃ 「 .antisubbots on/off 」
-┃ ➜ Bloquea sub-bots o bots externos
-┃    en el grupo.
-┃
-┃ 「 .soloadmin 」
-┃ ➜ Alias de modo admin.
-┃
-┃ 「 .config 」
-┃ ➜ 📊 Muestra el estado completo del sistema
-┃    con todos los módulos activados o desactivados.
-┃
-┃    • welcome: 🟢 / 🔴
-┃    • antilink: 🟢 / 🔴
-┃    • nsfw: 🟢 / 🔴
-┃    • reaction: 🟢 / 🔴
-┃
-┃    Sirve como panel general del bot.
-┃
+╚═══━━━〔 ✦ 𝐄𝐌𝐏𝐈𝐑𝐄 𝐁𝐎𝐓 ✦ 〕━━━═══╝
+`
 
-┃ 🔗 ENLACES
-┃
-┃ 「 .link / .l 」
-┃ ➜ Obtiene el enlace actual
-┃    de invitación del grupo.
-┃
-┃ 「 .newlink / .setlink / .nl 」
-┃ ➜ Restablece y genera
-┃    un nuevo enlace del grupo.
-┃
+await conn.reply(m.chat, txt, m)
 
-┃ 🔓 CONTROL DEL GRUPO
-┃
-┃ 「 .grupo abrir 」
-┃ 「 .abrirgrupo 」
-┃ 「 .open / .abrir 」
-┃ ➜ Abre el grupo para que
-┃    todos puedan enviar mensajes.
-┃
-┃ 「 .grupo cerrar 」
-┃ 「 .cerrargrupo 」
-┃ 「 .close / .cerrar 」
-┃ ➜ Cierra el grupo y solo
-┃    los admins podrán escribir.
-┃
-┃ ➜ El comando mostrará quién
-┃    abrió o cerró el grupo.
-┃
+}
 
-┃ 👑 ADMINISTRADORES
-┃
-┃ 「 .promote 」
-┃ 「 .daradmin 」
-┃ 「 .darpoder 」
-┃ ➜ Convierte al usuario
-┃    mencionado en admin.
-┃
-┃ 「 .demote 」
-┃ 「 .quitaradmin 」
-┃ 「 .quitarpoder 」
-┃ ➜ Quita los permisos
-┃    de administrador.
-┃
+handler.help = ['menu']
+handler.tags = ['main']
 
-┃ 👑 MODERACIÓN
-┃
-┃ 「 .admins / .admis 」
-┃ ➜ Etiqueta a todos los
-┃    administradores del grupo.
-┃
-┃ 「 .del / .deleted / .d 」
-┃ ➜ Elimina el mensaje
-┃    respondido por el admin.
-┃
-┃ 「 .delall / .dall 」
-┃ ➜ Elimina varios mensajes
-┃    recientes del usuario respondido.
-┃
-┃ 「 .clean 」
-┃ ➜ Limpia mensajes recientes
-┃    enviados por el bot en el chat.
-┃
+handler.command = /^(menu|allmenu|help)$/i
 
-┃ 🏥 CUARENTENA
-┃
-┃ 「 .cuarentena 」
-┃ ➜ Registra usuarios mencionados
-┃    en cuarentena para este grupo.
-┃
-┃ 「 .internados 」
-┃ ➜ Muestra los usuarios
-┃    actualmente en cuarentena.
-┃
-┃ 「 .delcuarentena 」
-┃ ➜ Elimina la cuarentena
-┃    almacenada del grupo.
-┃
-┃ 🔒 Solo admins.
-┃ 📂 Datos guardados por grupo.
-┃
-
-┃ ⚡ INFORMACIÓN DEL BOT
-┃
-┃ 「 .ping 」
-┃ ➜ Muestra la velocidad
-┃    de respuesta del bot.
-┃
-┃ 「 .speed 」
-┃ ➜ Enseña el tiempo de
-┃    ejecución y rendimiento.
-┃
-┃ 「 .runtime 」
-┃ ➜ Muestra cuánto tiempo
-┃    lleva activo el bot.
-┃
-┃ 「 .uptime 」
-┃ ➜ Indica el tiempo total
-┃    encendido sin apagarse.
-┃
-┃ 「 .owner 」
-┃ ➜ Envía el contacto
-┃    del creador del bot.
-┃
-┃ 「 .menu / .men 」
-┃ ➜ Muestra este panel
-┃    completo de comandos.
-┃
-
-╰━━━❍ ${wm}
-`;
-
-    await m.react('📜');
-
-    return conn.sendMessage(
-      m.chat,
-      { text: menu },
-      { quoted: m }
-    );
-
-  } catch (error) {
-
-    console.error("❌ Error:", error);
-
-    await m.react('❌');
-
-    return m.reply(
-      `⚠️ Ocurrió un error:\n${error.message}`
-    );
-  }
-};
-
-handler.command = handler.help = [
-  "menu",
-  "men"
-];
-
-handler.tags = [
-  "main"
-];
-
-export default handler;
+export default handler
