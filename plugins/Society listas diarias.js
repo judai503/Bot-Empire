@@ -4,16 +4,20 @@ import path from 'path'
 const dir = 'scty'
 const file = path.join(dir, 'dlist.json')
 
-let dlistData = []
-if (fs.existsSync(file)) {
-  try {
-    dlistData = JSON.parse(fs.readFileSync(file))
-  } catch {
-    dlistData = []
+// Función para leer el archivo de forma segura en cada ejecución del comando
+const getDlistData = () => {
+  if (fs.existsSync(file)) {
+    try {
+      return JSON.parse(fs.readFileSync(file, 'utf-8'))
+    } catch {
+      return []
+    }
   }
+  return []
 }
 
 const handler = async (m, { isOwner, isAdmin, conn, args, participants, command }) => {
+  const dlistData = getDlistData()
   
   const matchNumero = command.match(/\d+/)
   const idBuscado = matchNumero ? parseInt(matchNumero[0]) : 1
@@ -39,8 +43,9 @@ const handler = async (m, { isOwner, isAdmin, conn, args, participants, command 
   const titulosAdmin = ["👑 𝗔𝗗𝗠𝗜𝗡𝗜𝗦𝗧𝗥𝗔𝗖𝗜Ó𝗡 👑", "👑 𝗘𝗡𝗖𝗔𝗥𝗚𝗔𝗗𝗢𝗦 👑", "👑 𝗔𝗗𝗠𝗜𝗡𝗜𝗦𝗧𝗥𝗔𝗗𝗢𝗥𝗘𝗦 👑"]
   const adminTituloRandom = titulosAdmin[Math.floor(Math.random() * titulosAdmin.length)]
 
-  const listAdmins = participants.filter(p => p.admin !== null).map(p => p.id)
-  const listUsuarios = participants.filter(p => p.admin === null).map(p => p.id)
+  // Corrección en la detección de administradores (asegura que tome 'admin' o 'superadmin')
+  const listAdmins = participants.filter(p => p.admin).map(p => p.id)
+  const listUsuarios = participants.filter(p => !p.admin).map(p => p.id)
   const mentions = [...listUsuarios, ...listAdmins]
 
   const e = estiloActual.emojis || ["🐠", "🪸", "🌊", "♻️", "🫧", "🆕"]
@@ -48,7 +53,9 @@ const handler = async (m, { isOwner, isAdmin, conn, args, participants, command 
 
   let texto = `${emojiComando}${emojiComando} ${await conn.getName(m.chat)} ${emojiComando}${emojiComando}\n\n`
   
-  texto += `${estiloActual.lines.join('\n')}\n`
+  if (estiloActual.lines && Array.isArray(estiloActual.lines)) {
+    texto += `${estiloActual.lines.join('\n')}\n`
+  }
   texto += `     ${separadorFinal}\n`
 
   texto += `${e[0] || '🐠'} 𝗔𝗟 𝗗𝗜́𝗔\n`
@@ -75,7 +82,6 @@ const handler = async (m, { isOwner, isAdmin, conn, args, participants, command 
   await conn.sendMessage(m.chat, { text: texto.trim(), mentions }, { quoted: m })
 }
 
-// ✅ FIX IMPORTANTE
 handler.command = /^(dlist\d+|revlist\d+)$/
 handler.group = true
 
