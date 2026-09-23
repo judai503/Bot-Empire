@@ -1,5 +1,5 @@
 /**
- * 📂 COMANDO: Uchiha Brat Generator (Sylphy API)
+ * 📂 COMANDO: Uchiha Brat Generator (Skyzxu API)
  * 📝 DESCRIPCIÓN: Crea stickers Brat estáticos o animados.
  * 👤 CREADOR: Barboza Developer
  * ⚡ ADAPTACIÓN: Empire Bot
@@ -26,68 +26,33 @@ const handler = async (m, { conn, text, command }) => {
     await m.react('🕒');
 
     try {
-        const b = (s) => Buffer.from(s, 'base64').toString('utf-8');
+        let buffer;
 
-        const apiBrat = b('aHR0cHM6Ly9zeWxwaHl5Lnh5ei90b29scy9icmF0');
-        const apiKey = b('c3lscGh5LTZmMTUwZA==');
+        if (/^bratv$/i.test(command)) {
+            const res = await fetch(
+                `https://skyzxu-brat.hf.space/brat-animated?text=${encodeURIComponent(contenidoTexto)}`
+            );
 
-        const tipo = /^bratv$/i.test(command)
-            ? 'Anim'
-            : 'Static';
+            if (!res.ok) {
+                await m.react('❌');
+                return m.reply('*Error al generar el Brat animado.*');
+            }
 
-        // 🎨 Combinaciones aleatorias
-        const estilos = [
-            { color: 'Blanco', fondo: 'Negro' },
-            { color: 'Negro', fondo: 'Blanco' },
+            buffer = Buffer.from(await res.arrayBuffer());
 
-            { color: 'Naranja', fondo: 'Blanco' },
-            { color: 'Rosa', fondo: 'Blanco' },
-            { color: 'Azul', fondo: 'Blanco' },
-            { color: 'Verde', fondo: 'Blanco' },
-            { color: 'Rojo', fondo: 'Blanco' },
-            { color: 'Morado', fondo: 'Blanco' },
-            { color: 'Amarillo', fondo: 'Blanco' },
-            { color: 'Cyan', fondo: 'Blanco' },
+        } else {
 
-            { color: 'Blanco', fondo: 'Rojo' },
-            { color: 'Blanco', fondo: 'Azul' },
-            { color: 'Blanco', fondo: 'Verde' },
-            { color: 'Blanco', fondo: 'Morado' },
-            { color: 'Blanco', fondo: 'Rosa' },
-            { color: 'Blanco', fondo: 'Naranja' },
-            { color: 'Blanco', fondo: 'Cyan' },
+            const res = await fetch(
+                `https://skyzxu-brat.hf.space/brat?text=${encodeURIComponent(contenidoTexto)}`
+            );
 
-            { color: 'Negro', fondo: 'Rojo' },
-            { color: 'Negro', fondo: 'Azul' },
-            { color: 'Negro', fondo: 'Verde' },
-            { color: 'Negro', fondo: 'Morado' },
-            { color: 'Negro', fondo: 'Rosa' },
-            { color: 'Negro', fondo: 'Naranja' },
-            { color: 'Negro', fondo: 'Amarillo' },
-            { color: 'Negro', fondo: 'Cyan' },
+            if (!res.ok) {
+                await m.react('❌');
+                return m.reply('*Error al generar el Brat.*');
+            }
 
-            { color: 'Rojo', fondo: 'Negro' },
-            { color: 'Azul', fondo: 'Negro' },
-            { color: 'Verde', fondo: 'Negro' },
-            { color: 'Morado', fondo: 'Negro' },
-            { color: 'Rosa', fondo: 'Negro' },
-            { color: 'Amarillo', fondo: 'Negro' },
-            { color: 'Cyan', fondo: 'Negro' }
-        ];
-
-        const estilo = estilos[Math.floor(Math.random() * estilos.length)];
-
-        const url =
-            `${apiBrat}?text=${encodeURIComponent(contenidoTexto)}&color=${encodeURIComponent(estilo.color)}&fondo=${encodeURIComponent(estilo.fondo)}&type=${tipo}&api_key=${apiKey}`;
-
-        const res = await fetch(url);
-
-        if (!res.ok) {
-            await m.react('❌');
-            return m.reply('*Error al procesar la solicitud con el servidor central.*');
+            buffer = Buffer.from(await res.arrayBuffer());
         }
-
-        const buffer = Buffer.from(await res.arrayBuffer());
 
         const stiker = await sticker(
             buffer,
