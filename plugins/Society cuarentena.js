@@ -52,7 +52,7 @@ const handler = async (
     if (!db[m.chat]?.length) {
       return conn.reply(
         m.chat,
-        '⚠️ No hay cuarentena',
+        '⚠️ No hay usuarios con permisos',
         m
       )
     }
@@ -65,7 +65,7 @@ const handler = async (
 
     targets = [...new Set(targets)]
 
-    // eliminar toda la cuarentena
+    // eliminar toda la lista
     if (!targets.length) {
 
       delete db[m.chat]
@@ -74,7 +74,7 @@ const handler = async (
 
       return conn.reply(
         m.chat,
-        '✅ Cuarentena eliminada',
+        '✅ Permisos eliminados',
         m
       )
     }
@@ -89,7 +89,7 @@ const handler = async (
 
     saveDB()
 
-    let txt = `✅ *USUARIOS RETIRADOS DE CUARENTENA*\n\n`
+    let txt = `🚪 *HA SALIDO DE PERMISOS*\n\n`
 
     targets.forEach((u, i) => {
       txt += `${i + 1}. @${u.split('@')[0]}\n`
@@ -126,12 +126,12 @@ const handler = async (
     if (!users.length) {
       return conn.reply(
         m.chat,
-        '✅ No hay internados',
+        '✅ No hay usuarios con permisos',
         m
       )
     }
 
-    let txt = `🏥 *INTERNADOS EN CUARENTENA*\n\n`
+    let txt = `👥 *USUARIOS CON PERMISOS*\n\n`
     txt += `👥 Total: ${users.length}\n\n`
 
     users.forEach((u, i) => {
@@ -230,7 +230,7 @@ const handler = async (
 
   saveDB()
 
-  let txt = `🚨 *CUARENTENA ACTIVADA*\n\n`
+  let txt = `🔐 *PERMISOS ASIGNADOS*\n\n`
   txt += `👥 Usuarios registrados:\n\n`
 
   users.forEach((user, i) => {
